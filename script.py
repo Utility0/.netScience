@@ -6,6 +6,9 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import community
 import numpy as np
+from cdlib import algorithms
+
+
 
 
 ###
@@ -87,9 +90,8 @@ plt.savefig('twitterPlot.png')
 plt.close()
 
 ###
-#Louvain Community detection
+# Louvain Community Detection
 ###
-
 
 partition = community.best_partition(g)
 groups = [i for i in set(partition.values())]
@@ -98,17 +100,22 @@ pos = nx.spring_layout(g)
 groups = list(map(lambda x: (x,colors[x]),groups))
 groups = list(map(lambda x: ([nodes for nodes in partition.keys() if partition[nodes] == x[0]],x[1]),groups))
 list(map(lambda x: nx.draw_networkx_nodes(g, pos, x[0], node_color=x[1], node_size=20),groups))
+print(groups)
 nx.draw_networkx_edges(g, pos, alpha=0.5)
 
-
-
-# count = 0
-# for com in set(partition.values()) :
-#     count = count + 1
-#     list_nodes = [nodes for nodes in partition.keys()
-#                                 if partition[nodes] == com]
-#     nx.draw_networkx_nodes(g, pos, list_nodes, node_size = 20,
-#                                 node_color = 'blue')
-
 plt.savefig('louvain.png')
+plt.close()
+
+###
+# Walktrap Community Detection
+###
+
+walktrap = algorithms.walktrap(g)
+walktrap = [(node,index) for index, node in enumerate(walktrap.communities)]
+walktrap = list(map(lambda x: (x[0],colors[x[1]]),walktrap))
+list(map(lambda x: nx.draw_networkx_nodes(g, pos, x[0], node_color=x[1], node_size=20),walktrap))
+print(groups)
+nx.draw_networkx_edges(g, pos, alpha=0.5)
+
+plt.savefig('walktrap.png')
 plt.close()
