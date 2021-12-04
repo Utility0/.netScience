@@ -92,15 +92,23 @@ plt.close()
 
 
 partition = community.best_partition(g)
-size = float(len(set(partition.values())))
+groups = [i for i in set(partition.values())]
+colors=['#FF0000','#00FF00','#0000FF','#FFFF00','#00FFFF','#FF00FF','#000000']
 pos = nx.spring_layout(g)
-count = 0
-for com in set(partition.values()) :
-    count = count + 1
-    list_nodes = [nodes for nodes in partition.keys()
-                                if partition[nodes] == com]
-    nx.draw_networkx_nodes(g, pos, list_nodes, node_size = 20,
-                                node_color = str(count / size))
+groups = list(map(lambda x: (x,colors[x]),groups))
+groups = list(map(lambda x: ([nodes for nodes in partition.keys() if partition[nodes] == x[0]],x[1]),groups))
+list(map(lambda x: nx.draw_networkx_nodes(g, pos, x[0], node_color=x[1], node_size=20),groups))
 nx.draw_networkx_edges(g, pos, alpha=0.5)
+
+
+
+# count = 0
+# for com in set(partition.values()) :
+#     count = count + 1
+#     list_nodes = [nodes for nodes in partition.keys()
+#                                 if partition[nodes] == com]
+#     nx.draw_networkx_nodes(g, pos, list_nodes, node_size = 20,
+#                                 node_color = 'blue')
+
 plt.savefig('louvain.png')
 plt.close()
