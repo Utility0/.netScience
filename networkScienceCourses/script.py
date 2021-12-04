@@ -33,7 +33,8 @@ vertices = [i for i in range(15)]
 G=nx.Graph()
 G.add_edges_from(edges)
 nx.draw(G,with_labels=True)
-plt.savefig('firstPlot.png')
+plt.savefig('smallNetwork.png')
+plt.close()
 
 ###
 # Compute Values
@@ -67,24 +68,39 @@ print("-"*20)
 
 g = nx.read_edgelist("twitter/2097571.edges",create_using=nx.Graph(), nodetype = int)
 nx.draw(g, node_size=100)
-print(f"Number of nodes: {len(g.nodes)} edges: {len(g.edges)}")
+print("Number of nodes: "+str(len(g.nodes))+" edges: "+str(len(g.edges)))
 
+def delete_unconnected_nodes(G):
+    nodes_to_delete = []
+    for node in G.nodes:
+        if not G.neighbors(node):
+            nodes_to_delete.append(node)
+    G.remove_nodes_from(nodes_to_delete)
+    Gcc = sorted(nx.connected_components(G), key=len, reverse=True)
+    G = G.subgraph(Gcc[0])
+    return G
+
+g = delete_unconnected_nodes(g)
+
+nx.draw(g)
+plt.savefig('twitterPlot.png')
+plt.close()
 
 ###
 #Louvain Community detection
 ###
 
-#first compute the best partition
+
 partition = community.best_partition(g)
-#drawing
 size = float(len(set(partition.values())))
 pos = nx.spring_layout(g)
 count = 0
 for com in set(partition.values()) :
-    count = count + 1.
+    count = count + 1
     list_nodes = [nodes for nodes in partition.keys()
                                 if partition[nodes] == com]
     nx.draw_networkx_nodes(g, pos, list_nodes, node_size = 20,
                                 node_color = str(count / size))
 nx.draw_networkx_edges(g, pos, alpha=0.5)
 plt.savefig('louvain.png')
+plt.close()
