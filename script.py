@@ -9,7 +9,7 @@ import community
 import numpy as np
 from cdlib import algorithms
 
-
+colors=['#FF0000','#00FF00','#0000FF','#FFFF00','#00FFFF','#FF00FF','#000000']
 
 
 ###
@@ -96,7 +96,6 @@ plt.close()
 
 partition = community.best_partition(g)
 groups = [i for i in set(partition.values())]
-colors=['#FF0000','#00FF00','#0000FF','#FFFF00','#00FFFF','#FF00FF','#000000']
 pos = nx.spring_layout(g)
 groups = list(map(lambda x: (x,colors[x]),groups))
 groups = list(map(lambda x: ([nodes for nodes in partition.keys() if partition[nodes] == x[0]],x[1]),groups))
