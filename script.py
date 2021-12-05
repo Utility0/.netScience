@@ -4,6 +4,7 @@
 
 import networkx as nx
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import community
 import numpy as np
 from cdlib import algorithms
@@ -114,8 +115,28 @@ walktrap = algorithms.walktrap(g)
 walktrap = [(node,index) for index, node in enumerate(walktrap.communities)]
 walktrap = list(map(lambda x: (x[0],colors[x[1]]),walktrap))
 list(map(lambda x: nx.draw_networkx_nodes(g, pos, x[0], node_color=x[1], node_size=20),walktrap))
-print(groups)
 nx.draw_networkx_edges(g, pos, alpha=0.5)
 
 plt.savefig('walktrap.png')
 plt.close()
+
+###
+# Centrality Plots
+###
+
+def plotFromDict(graph, d,savePath):
+    minimum = float(min(list(d.values())))
+    maximum = float(max(list(d.values())))
+    norm = mpl.colors.Normalize(vmin=minimum, vmax=maximum)
+    mapper = mpl.cm.ScalarMappable(norm=norm, cmap=mpl.cm.coolwarm)
+    nx.draw(graph,
+        nodelist=d,
+        node_size=[j*1000 for j in d.values()],
+        node_color=[mapper.to_rgba(i) for i in d.values()])
+    plt.savefig(savePath)
+    plt.close()
+
+plotFromDict(g, nx.degree_centrality(g),'degree_centrality.png')
+plotFromDict(g, nx.betweenness_centrality(g),'betweenness_centrality.png')
+plotFromDict(g, nx.closeness_centrality(g),'closeness_centrality.png')
+plotFromDict(g, nx.katz_centrality_numpy(g),'katz_centrality.png')
